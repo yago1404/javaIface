@@ -51,7 +51,7 @@ public class Main {
             }
 
             else if (option == 8){
-                remove(netWork, communitys,user);
+                user = remove(netWork, communitys,user);
             }
 
             else if (option == 9)
@@ -61,6 +61,9 @@ public class Main {
                 notification(netWork, user);
 
             else if (option == 11)
+                publicCommunity(communitys, netWork, user);
+
+            else if (option == 12)
                 deBug(netWork);
 
             if (option == -1 && user != -1) {
@@ -70,12 +73,40 @@ public class Main {
         } while(option != -1);
     }
 
-    private static void remove(String[][] netWork, String[][] community,int user) {
+    private static void publicCommunity(String[][] communitys, String[][] netWork, int user) {
+        Scanner input = new Scanner(System.in);
+        String name = netWork[user][0];
+        System.out.println("qual o nome da comunidade");
+        String communityName = input.nextLine();
+        int pos = get(communitys,communityName, 0);
+        if (pos == -1){
+            System.out.println("Comunidade não encontrada");
+            return;
+        }
+
+        if (checkCommunityMember(communitys, pos,name)){
+            System.out.println("entre com a menssagem");
+            String mensage = input.nextLine();
+            communitys[pos][3] += "\n"+name+" disse: "+mensage;
+        }
+        else
+            System.out.println("Comunidade inexistente");
+    }
+
+    private static boolean checkCommunityMember(String[][] communitys,int community,String name) {
+        for (int i = 4; i < 1000; i++){
+            if (communitys[community][i].equals(name))
+                return true;
+        }
+        return communitys[community][2].equals(name);
+    }
+
+    private static int remove(String[][] netWork, String[][] community,int user) {
         Scanner input = new Scanner(System.in);
         System.out.println("Certeza que deseja apagar sua conta!?\nsim ou não");
         String confirm = input.nextLine();
         if (confirm.equals("não"))
-            return;
+            return user;
         String name = netWork[user][0];
         for(int i = 0; i < 1000; i++){
             netWork[user][i] = "-";
@@ -83,6 +114,7 @@ public class Main {
         dellInFriends(netWork,name);
         dellInCommunity(community, name);
         System.out.println("Usuario removido com sucesso");
+        return -1;
     }
 
     private static void dellInCommunity(String[][] community, String name) {
@@ -136,7 +168,6 @@ public class Main {
         int option = input.nextInt();
         if (option == 4){
             for (int i = 4; i < 1000; i++){
-                //System.out.println("aquii");
                 if (!communitys[pos][i].equals("-")){
                     System.out.println(communitys[pos][i]);
                 }
@@ -255,6 +286,8 @@ public class Main {
             confirmFriendRequest(netWork, user, newFriend);
             System.out.println("1 => continuar\n2=>finalizar");
             option = input.nextInt();
+            if (option == 1)
+                newFriend = input.nextLine();
         }
         netWork[user][8] = "-";
 
@@ -291,7 +324,6 @@ public class Main {
             System.out.println("Entre com o nome da nova comunidade:");
             name = input.nextLine();
             confirm = get(communitys,name,0);
-            System.out.println(confirm);
             if (confirm != -1)
                 System.out.println("Nome dessa comunidade ja existe");
         }
@@ -320,7 +352,7 @@ public class Main {
                 System.out.println("nome :"+netWork[i][3]);
                 System.out.println("idade: "+netWork[i][4]);
                 System.out.println("sexo: "+netWork[i][5]);
-                System.out.println("estado sivil: "+netWork[i][6]);
+                System.out.println("estado civil: "+netWork[i][6]);
                 System.out.println("mensagem pendente: "+netWork[i][7]);
                 System.out.println("Solicitação de amizade "+netWork[i][8]);
                 int j = 9;
@@ -401,17 +433,18 @@ public class Main {
         String login = input.nextLine();
 
         int pos = get(netWork, login, 1);
-        if (pos == -1)
+        if (pos == -1){
+            System.out.println("Usuario não encontrado");
             return -1;
-        int ok = 0;
-        do {
-            System.out.println("entre com a senha");
-            String pass = input.nextLine();
-            if (pass.equals(netWork[pos][2]))
-                ok = 1;
-            else
-                System.out.println("Senha incorreta");
-        }while(ok != 1);
+
+        }
+
+        System.out.println("entre com a senha");
+        String pass = input.nextLine();
+        if (!pass.equals(netWork[pos][2])){
+            System.out.println("Senha incorreta");
+            return -1;
+        }
         return pos;
     }
 
@@ -436,7 +469,6 @@ public class Main {
                 System.out.println("login ja existe");
         }while(confirm != 1);
 
-        System.out.println(login);
 
         System.out.println("Entre com a senha");
         String password = input.nextLine();
@@ -478,9 +510,10 @@ public class Main {
             System.out.println("4 => Enviar mensagem");
             System.out.println("5 => Criar comunidade");
             System.out.println("6 => Adicionar membro");
-            System.out.println("7 => Recuperar informações sobre usuarios");
+            System.out.println("7 => Recuperar informações");
             System.out.println("8 => Remover conta");
             System.out.println("10 => para checar notificações");
+            System.out.println("11 => Publicar no mural de uma comunidade");
         }
         else {
             System.out.println("1 => Criar Conta");
